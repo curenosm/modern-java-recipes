@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,7 @@ public class Lambdas {
   @Bean
   public CommandLineRunner examples() {
     return args -> {
-      log.info("{}", args);
+      log.info("{}", Arrays.toString(args));
 
       Runnable t = new Runnable(){
         @Override
@@ -74,7 +75,7 @@ public class Lambdas {
 
       List<String> sorted2 = strings.stream()
         .sorted(String::compareTo)
-        .collect(Collectors.toList());
+        .toList();
 
       Stream.of("this", "is", "a", "list", "of", "strings")
         .map(x -> x.length()) // Instance method via class name1
@@ -92,28 +93,74 @@ public class Lambdas {
 
       List<String> peopleNames = people.stream()
         .map(person -> person.getName())
-        .collect(Collectors.toList());
+        .toList();
 
       List<String> peopleNames2 = people.stream()
         .map(Person::getName)
-        .collect(Collectors.toList());
+        .toList();
 
       List<Person> people2 = peopleNames2.stream()
         .map(Person::new) // Constructor reference
-        .collect(Collectors.toList());
+        .toList();
 
 
       // List to stream and viceversa
       Person before = new Person("Grace Hopper");
 
       List<Person> peoplee = Stream.of(before)
-        .collect(Collectors.toList());
+        .toList();
 
-      Person after = people.get(0);
+      Person after = peoplee.get(0);
       assert before == after;
 
       before.setName("Grace Murray Hopper");
       assert "Grace Murray Hopper".equals(after.getName());
+
+      List<Person> people3 = Stream.of(before)
+        .map(Person::new)
+        .toList();
+
+      after = people3.get(0);
+      assert !(before == after);
+      assert before.equals(after);
+      before.setName("Rear Admiral Dr. Grace Murray Hopper");
+
+      Arrays.stream(names)
+        .map(name -> name.split(" "))
+        .map(Person::new)
+        .toList();
+
+
+    };
+  }
+
+  @Bean
+  public ApplicationRunner examples2() {
+    return args -> {
+
+      File directory = new File("./src/main/java");
+
+      // Filaname reader
+      String[] names = directory.list(
+        new FilenameFilter() {
+          @Override
+          public boolean accept (File dir, String name) {
+            return name.endsWith(".java");
+          }
+        }
+      );
+
+      // Array of person references
+      assert names != null;
+      Person[] people = Arrays.stream(names)
+        .map(Person::new)
+        .toArray(Person[]::new);
+
+
+
+      // Recipe 4
+
+
 
     };
   }
