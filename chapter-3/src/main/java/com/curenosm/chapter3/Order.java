@@ -8,5 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Order {
-  private int id;
+
+	private int id;
+
 }

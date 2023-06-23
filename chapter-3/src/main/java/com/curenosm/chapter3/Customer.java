@@ -8,16 +8,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Customer {
-  private String name;
-  private List<Order> orders = new ArrayList<>();
 
-  public Customer(String name) {
-    this.name = name;
-  }
+	private String name;
 
-  public Customer addOrder(Order order) {
-    orders.add(order);
-    return this;
-  }
+	private List<Order> orders = new ArrayList<>();
+
+	public Customer(String name) {
+		this.name = name;
+	}
+
+	public Customer addOrder(Order order) {
+		orders.add(order);
+		return this;
+	}
 
 }

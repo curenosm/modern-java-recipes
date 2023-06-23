@@ -11,13 +11,16 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Team {
 
-  private static final NumberFormat nf = NumberFormat.getCurrencyInstance();
-  private int id;
-  private String name;
-  private double salary;
+	private static final NumberFormat nf = NumberFormat.getCurrencyInstance();
 
-  public String toString() {
-    return String.format("Team {id=%s, name='%s', salary=%s}", id, name, nf.format(salary));
-  }
+	private int id;
+
+	private String name;
+
+	private double salary;
+
+	public String toString() {
+		return String.format("Team {id=%s, name='%s', salary=%s}", id, name, nf.format(salary));
+	}
 
 }
