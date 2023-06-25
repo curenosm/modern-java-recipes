@@ -1,0 +1,14 @@
+= Book Title
+Doc Writer <doc@example.org>
+v2.0.1, 2022-01-15
+:doctype: book
+:front-cover-image: cover.png[,1050,1600]
+
+[preface]
+== Preface
+
+The story behind the story.
+
+include::chapter-1.adoc[leveloffset=1]
+
+include::chapter-2.adoc[leveloffset=1]
