@@ -1,6 +1,9 @@
 package com.curenosm.chapter5;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,6 +18,7 @@ import java.util.function.DoubleToIntFunction;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -289,7 +293,115 @@ public class Chapter5Application {
   @Order(9)
   public ApplicationRunner extractedMethodForExceptionHandling() {
     return args -> {
+      System.out.println(divDouble(List.of(1.0, 2.0, 3.0, 0.0),0.0));
+      System.out.println(div(List.of(1, 2, 3, 0),0));
+    };
+  }
 
+
+  // This may return a runtime exception in this case an ArithmeticException if factor was 0
+  public List<Integer> div(List<Integer> values, Integer factor) {
+    return values
+      .stream()
+      .map(n -> div(n, factor))
+      .toList();
+  }
+
+  public Integer div (Integer n, Integer factor) {
+    try {
+      return n / factor;
+    } catch (ArithmeticException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  // According to IEEE 754 specification this is an expected behavior for floating point numbers
+  public List<Double> divDouble(List<Double> values, Double factor) {
+    return values
+      .stream()
+      .map(n -> n / factor)
+      .toList();
+  }
+
+  @Bean
+  @Order(10)
+  public ApplicationRunner checkedExceptionsAndLambdas() {
+    return args -> {
+      encodeValuesAnnonInnerClass("Hello", "World hehe").forEach(System.out::println);
+      encodeValuesLambda("Hello", "World hehe").forEach(System.out::println);
+      encodeValues("Hello", "World hehe").forEach(System.out::println);
+    };
+  }
+
+  public List<String> encodeValuesAnnonInnerClass(String... values) {
+    return Arrays.stream(values)
+      .map(new Function<String, String> (){
+        @Override
+        public String apply (String s) {
+          try {
+            return URLEncoder.encode(s, "UTF-8");
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+          }
+        }
+      })
+      .toList();
+  }
+
+  public List<String> encodeValuesLambda(String... values) {
+    return Arrays.stream(values)
+      .map(s -> {
+          try {
+            return URLEncoder.encode(s, "UTF-8");
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+          }
+        })
+        .toList();
+  }
+
+  public List<String> encodeValues(String... values) {
+    return Arrays.stream(values)
+      .map(this::encodeString)
+      .toList();
+  }
+
+  public String encodeString(String s) {
+    try {
+      return URLEncoder.encode(s, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Bean
+  @Order(11)
+  public ApplicationRunner useGenericExceptionWrapper() {
+    return args -> {
+      // Wrapping any function which throws an Exception
+      System.out.println(encodeValuesWithWrapper("Hello", "this", "is", "a", "test"));
+    };
+  }
+
+  public List<String> encodeValuesWithWrapper(String... values) {
+    return Arrays.stream(values)
+      .map(wrapper(s -> URLEncoder.encode(s, "UTF-8")))
+      .toList();
+  }
+
+  /**
+   * A wrapper for each kind of functional interface is required to apply this approach (Consumer, Function, ...)
+   */
+  private static <T, R, E extends Exception> Function<T, R> wrapper(FunctionWithException<T, R, E> fe) {
+    return args -> {
+      try {
+        return fe.apply(args);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     };
   }
 
