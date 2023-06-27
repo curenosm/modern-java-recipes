@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202306271056
+      author: curenosm
+      changes:
+      -  executeCommand:
+#          args:
+#            -  arg:
+#                value: -out
+#            -  arg:
+#                value: -param2
+          executable: explorer.exe
+          os: Windows 11
+          timeout: 10s
