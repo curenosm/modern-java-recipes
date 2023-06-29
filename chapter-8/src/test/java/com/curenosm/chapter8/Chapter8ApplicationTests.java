@@ -1,5 +1,7 @@
 package com.curenosm.chapter8;
 
+import static com.curenosm.chapter8.Chapter8Application.getRegionNamesForOffset;
+import static com.curenosm.chapter8.Chapter8Application.getRegionNamesForZoneId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalQueries;
+import java.util.List;
 import java.util.stream.IntStream;
 import net.bytebuddy.asm.Advice.Local;
 import org.junit.jupiter.api.Assertions;
@@ -42,7 +45,7 @@ class Chapter8ApplicationTests {
     assert "2017-09-02".equals(end.format(formatter));
 
     end = start.plusYears(2);
-    assert "2017-02-02".equals(end.format(formatter));
+    assert "2019-02-02".equals(end.format(formatter));
   }
 
   @Test
@@ -130,13 +133,13 @@ class Chapter8ApplicationTests {
   public void  adjustersAndQueries() {
     LocalDateTime start = LocalDateTime.of(2017, Month.JANUARY, 31, 11, 30);
     LocalDateTime end = start.with(TemporalAdjusters.firstDayOfNextMonth());
-    assertEquals("2017-01-31T11:30:00", end.toString());
+    assertEquals("2017-02-01T11:30", end.toString());
 
     end = start.with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
-    assertEquals("2017-02-09T11:30:00", end.toString());
+    assertEquals("2017-02-02T11:30", end.toString());
 
     end = start.with(TemporalAdjusters.previousOrSame(DayOfWeek.THURSDAY));
-    assertEquals("2017-02-02T11:30:00", end.toString());
+    assertEquals("2017-01-26T11:30", end.toString());
   }
 
   @Test
@@ -184,5 +187,32 @@ class Chapter8ApplicationTests {
       });
   }
 
+  @Test
+  public void getRegionNamesForSystemDefault() throws Exception {
+    ZonedDateTime now = ZonedDateTime.now();
+    ZoneId zoneId = now.getZone();
+    List<String> names = getRegionNamesForZoneId(zoneId);
+    assertTrue(names.contains(zoneId.getId()));
+  }
+
+  @Test
+  public void getRegionNamesForGMT() throws Exception {
+    List<String> names = getRegionNamesForOffset(0, 0);
+    assert names.contains("GMT");
+    assert names.contains("Etc/GMT");
+    assert names.contains("Etc/UTC");
+    assert names.contains("UTC");
+    assert names.contains("Etc/Zulu");
+  }
+
+  @Test
+  public void getRegionNamesForChicago() throws Exception {
+    ZoneId chicago = ZoneId.of("America/Chicago");
+    List<String> names = getRegionNamesForZoneId(chicago);
+    assert names.contains("America/Chicago");
+    assert names.contains("US/Central");
+    assert names.contains("Canada/Central");
+    assert names.contains("Etc/GMT+5") || names.contains("Etc/GMT+6");
+  }
 
 }

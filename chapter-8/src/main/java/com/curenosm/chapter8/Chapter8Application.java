@@ -1,6 +1,9 @@
 package com.curenosm.chapter8;
 
-import java.text.Format;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,16 +16,20 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 
+@Slf4j
 @SpringBootApplication
 public class Chapter8Application {
 
@@ -90,6 +97,8 @@ public class Chapter8Application {
       LocalDate res1 = convertFromUtilDateUsingInstant(new Date());
       LocalDate res2 = convertFromUtilDateUsingInstant(new Date());
 
+      System.out.println(res1);
+      System.out.println(res2);
 
       // Built-in conversion methods in java.sql.Date and java.sql.Timestamp
       LocalDateTime now = LocalDateTime.now();
@@ -203,5 +212,80 @@ public class Chapter8Application {
         });
     };
   }
+
+  @Bean
+  @Order(7)
+  public ApplicationRunner findingRegionNamesFromOffsets() {
+    return args -> {
+      List<String> sameOffset = getRegionNamesForZoneId(ZoneId.of("America/Mexico_City"));
+      Gson gson = new GsonBuilder()
+        .setPrettyPrinting()
+        .create();
+
+      String pretty = gson.toJson(sameOffset);
+      System.out.println(pretty);
+
+    };
+  }
+
+  public static List<String> getRegionNamesForZoneId (ZoneId zoneId) {
+    LocalDateTime now = LocalDateTime.now();
+    ZonedDateTime zdt = now.atZone(zoneId);
+    ZoneOffset offset = zdt.getOffset();
+    return getRegionNamesForOffset(offset);
+  }
+
+  public static List<String> getRegionNamesForOffset(ZoneOffset offset) {
+    LocalDateTime now = LocalDateTime.now();
+    return ZoneId
+      .getAvailableZoneIds()
+      .stream()
+      .map(ZoneId::of)
+      .filter(zoneId -> now.atZone(zoneId).getOffset().equals(offset))
+      .map(ZoneId::toString)
+      .sorted()
+      .toList();
+  }
+
+  /**
+   * In case you know the offset but not the ZoneId of a region.
+   */
+  public static List<String> getRegionNamesForOffset(int hours, int minutes) {
+    ZoneOffset offset = ZoneOffset.ofHoursMinutes(hours, minutes);
+    return getRegionNamesForOffset(offset);
+  }
+
+  @Bean
+  @Order(8)
+  public ApplicationRunner timeBetweenEvents() {
+    return args -> {
+      LocalDate electionDay = LocalDate.of(2020, Month.NOVEMBER, 3);
+      LocalDate today = LocalDate.now();
+
+      System.out.printf("%d day(s) to go...%n", ChronoUnit.DAYS.between(today, electionDay));
+
+      Period until = today.until(electionDay); // Equivalent to Period.between
+      System.out.printf(
+        "%d year(s), %d month(s), %d day(s)%n",
+        until.getYears(),
+        until.getMonths(),
+        until.getDays()
+      );
+
+      Instant start = Instant.now();
+
+      for (long i = 0; i < 1_000_000; i++) {
+        double temp = Math.exp(i);
+      }
+
+      Instant end = Instant.now();
+      System.out.println(getTiming(start, end));
+    };
+  }
+
+  public static double getTiming(Instant start, Instant end) {
+    return Duration.between(start, end).toMillis() / 1000.0;
+  }
+
 
 }

@@ -18,12 +18,24 @@ configurations {
 }
 
 repositories {
+    maven { url "https://clojars.org/repo" }
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
+    implementation 'ai.djl:api:0.22.1'
+    implementation 'ai.djl.pytorch:pytorch-engine:0.22.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.guava:guava:32.0.1-jre'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // implementation 'org.liquibase:liquibase-core'
+    implementation("org.clojure:clojure:1.11.1")
+    implementation("org.msync:spring-boost:0.2.0")
+    implementation("compojure:compojure:1.7.0")
+
+
     runtimeOnly 'com.h2database:h2'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
