@@ -71,6 +71,25 @@ class Chapter9ApplicationTests {
     assert 5 == completableFuture.get();
   }
 
+  CompletableFuture<Integer> getIntegerCompletableFuture(String n) {
+    return CompletableFuture
+      .supplyAsync(() -> Integer.parseInt(n))
+      .handle((val, exc) -> val != null ? val : 0);
+  }
+
+  @Test
+  void handleWithException() throws Exception {
+    String num = "abc";
+    CompletableFuture<Integer> value = getIntegerCompletableFuture(num);
+    assert value.get() == 0;
+  }
+
+  @Test
+  void handleWithoutException() throws InterruptedException, ExecutionException {
+    String num = "32";
+    CompletableFuture<Integer> value = getIntegerCompletableFuture(num);
+    assert value.get() == 32;
+  }
 
 
 }

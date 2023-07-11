@@ -249,7 +249,6 @@ public class Chapter9Application {
           .thenAccept(System.out::println)
           .join();
       } catch (Exception e) {}
-
     };
   }
 
@@ -258,6 +257,14 @@ public class Chapter9Application {
       Thread.sleep(100);
     } catch (InterruptedException ignored) {}
     return "42";
+  }
+
+  @Bean
+  @Order(7)
+  public ApplicationRunner coordinatingCompletablePt2() {
+    return args -> {
+
+    };
   }
 
 
