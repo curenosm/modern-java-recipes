@@ -45,8 +45,14 @@ public class Chapter4Application {
 	/**
 	 * The {@code sorted} method on Stream produces a new, sorted stream using the natural
 	 * ordering for the class.
+	 * The next image illustrates better:
+	 * TODO: 30/07/2023
+	 * @implNote The {@code sorted} method
+	 * @see <a href="https://docs.oracle.com/javase/tutorial/figures/uiswing/components/ComboBoxDemo2.png">ComboBoxDemo2.png</a>
+	 * @since 1.0.0
 	 * @return Lambda to be executed immediately after our application context has been
 	 * created.
+	 * <img src="https://cdn-icons-png.flaticon.com/512/154/154878.png?w=826&t=st=1690775518~exp=1690776118~hmac=ff5c1acde4e702a0b9c86932290661e3283f985e1051746b5cac06f0bc3e80bf"/>
 	 */
 	@Bean
 	@Order(1)

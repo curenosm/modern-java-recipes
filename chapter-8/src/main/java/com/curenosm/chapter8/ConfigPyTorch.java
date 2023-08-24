@@ -20,7 +20,7 @@ import ai.djl.training.util.*;
 public class ConfigPyTorch {
 
   @Bean
-  @Order(9999)
+  @Order(9)
   public ApplicationRunner loadModelPytorch() {
     return args -> {
       DownloadUtils.download(

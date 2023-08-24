@@ -2,7 +2,18 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.1'
     id 'io.spring.dependency-management' version '1.1.0'
-    id 'me.champeau.jmh' version '0.6.8'
+    id 'org.sonarqube' version '4.3.0.3225'
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "qc-for-cs"
+        property "sonar.projectName", "qc-for-cs"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.token", "sqp_003b610108ccc3a06f440498396f65ff3200c4db"
+        property "sonar.login", "admin"
+        property "sonar.password", "admin"
+    }
 }
 
 group = 'com.example'
@@ -24,14 +35,6 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.openjdk.jmh:jmh-core:1.36'
-
-
-    jmh 'org.openjdk.jmh:jmh-core:1.36'
-    jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
-
-    // this is the line that solves the missing /META-INF/BenchmarkList error
-    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
